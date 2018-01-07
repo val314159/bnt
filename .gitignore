@@ -1,5 +1,8 @@
 # bins
-prs
+prs rmain
+
+# backups
+*.bak *~
 
 # Prerequisites
 *.d
