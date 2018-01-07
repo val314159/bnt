@@ -5,6 +5,7 @@
 #include<string.h>
 int pushv(void**v,void*d){if(v)v[++*(long*)v]=d;return 1;}
 int trimv(void*v,int z){if(v)*(long*)v=z;return 1;}
+int lenv(void*v){ return *(long*)v; }
 void* zero=0; char *s1 = "~~~~"; char *s2 = "||||";
 int plist(void**vec){
   for(int x=(printf("["),0);++x<=(int)vec[0];)

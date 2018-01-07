@@ -1,0 +1,40 @@
+#rule dir ::
+  "#" $alnum $dqstr
+  "#" $alnum $alnum
+  "#" $alnum $idstr
+  "#" $alnum $eof
+#rule atom  :: $alnum || $dqstr || $sqstr
+#rule arg   :: $expr ","?
+#rule preop :: "!"  || "++" || "--" || "*"
+#rule asnop :: "="  || "+=" || "-="
+#rule biop1 :: "&&" || "||"
+#rule biop2 :: "+"  || "-"
+#rule expr0 ::
+  $alnum "(" $arg* ")"
+  $preop $expr
+  $alnum $asnop $expr
+  $atom
+#rule expr1 ::
+  $expr0 $biop1 $expr
+  $expr0
+#rule expr2 ::
+  $expr1 $biop2 $expr
+  $expr1
+#rule expr ::
+  $expr2 "?" $expr ":" $expr
+  $expr2
+#rule stmt ::
+  "return" $expr ";"
+  "if" $expr $stmt "else" $stmt
+  "if" $expr $stmt
+  "for" "(" ";" ";" ")" $stmt
+  "while" $stmt || $decl || $expr ";"
+#rule block :: "{" $stmt* "}"
+#rule parm :: $alnum $alnum
+#rule func :: $alnum $alnum "(" $parms ")" $block
+#rule prot :: $alnum $alnum "(" $exprs ")" ";"
+#rule typ ::
+  $alnum $alnum "=" $expr ";"
+  $alnum $alnum ";"
+#rule decl :: $dir || $prot || $func || $typ
+#rule prog :: $decls $eof

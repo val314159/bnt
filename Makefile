@@ -1,9 +1,10 @@
 CFLAGS=-Wall
-all: Makefile clean test
-Makefile: *.c *.h ; make depend
+BINS=prs rmain
+all: clean $(BINS) test
+rmain: rmain.o RIPEMD160.o
 depend: ; makedepend *.c
-test: prs ; ./prs<tst/p.c
-clean: ; rm -fr *.o prs *~ *.bak
+test: $(BINS) ; ./prs<tst/p.c ; ./rmain
+clean: ; rm -fr *.o *~ *.bak *.xx $(BINS)
 # DO NOT DELETE
 
 prs.o: prog.h crules.h pio.h arr.h
