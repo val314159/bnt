@@ -1,16 +1,11 @@
 #include"prs.h"
+int x = x();
 int main(){
+  x();
+  x(2,3,400);
 }
-
-int mxain(qw er, sdf sdf){
-  int x;
-  x1(2,3,);
-  x2(2,3,);
-  x3(2,3,);
+int xmain(){
+  x();
+  x(2,3,400);
+  qqqq;
 }
-
-int myain(){
-  return !prog();
-}
-
-

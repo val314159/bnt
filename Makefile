@@ -1,3 +1,4 @@
+CFLAGS=-Wall
 all: Makefile clean test
 Makefile: *.c *.h ; makedepend *.c *.h
 test: prs ; ./prs<tst/p.c
@@ -214,6 +215,65 @@ pio.o: /usr/include/secure/_stdio.h /usr/include/secure/_common.h
 pio.o: /usr/include/strings.h /usr/include/string.h
 pio.o: /usr/include/sys/_types/_rsize_t.h /usr/include/sys/_types/_errno_t.h
 pio.o: /usr/include/secure/_string.h
+pprog.o: crules.h pio.h /usr/include/ctype.h /usr/include/sys/cdefs.h
+pprog.o: /usr/include/sys/_symbol_aliasing.h
+pprog.o: /usr/include/sys/_posix_availability.h /usr/include/runetype.h
+pprog.o: /usr/include/_types.h /usr/include/sys/_types.h
+pprog.o: /usr/include/machine/_types.h /usr/include/i386/_types.h
+pprog.o: /usr/include/sys/_pthread/_pthread_types.h
+pprog.o: /usr/include/sys/_types/_size_t.h
+pprog.o: /usr/include/sys/_types/_ct_rune_t.h
+pprog.o: /usr/include/sys/_types/_rune_t.h /usr/include/sys/_types/_wchar_t.h
+pprog.o: /usr/include/sys/_types/_wint_t.h /usr/include/unistd.h
+pprog.o: /usr/include/sys/unistd.h /usr/include/sys/_types/_posix_vdisable.h
+pprog.o: /usr/include/sys/_types/_seek_set.h /usr/include/_types/_uint64_t.h
+pprog.o: /usr/include/Availability.h /usr/include/AvailabilityInternal.h
+pprog.o: /usr/include/sys/_types/_ssize_t.h /usr/include/sys/_types/_uid_t.h
+pprog.o: /usr/include/sys/_types/_gid_t.h /usr/include/sys/_types/_intptr_t.h
+pprog.o: /usr/include/sys/_types/_off_t.h /usr/include/sys/_types/_pid_t.h
+pprog.o: /usr/include/sys/_types/_useconds_t.h
+pprog.o: /usr/include/sys/_types/_null.h /usr/include/sys/select.h
+pprog.o: /usr/include/sys/appleapiopts.h /usr/include/sys/_types/_fd_def.h
+pprog.o: /usr/include/sys/_types/_timespec.h
+pprog.o: /usr/include/sys/_types/_timeval.h /usr/include/sys/_types/_time_t.h
+pprog.o: /usr/include/sys/_types/_suseconds_t.h
+pprog.o: /usr/include/sys/_types/_sigset_t.h
+pprog.o: /usr/include/sys/_types/_fd_setsize.h
+pprog.o: /usr/include/sys/_types/_fd_set.h /usr/include/sys/_types/_fd_clr.h
+pprog.o: /usr/include/sys/_types/_fd_isset.h
+pprog.o: /usr/include/sys/_types/_fd_zero.h
+pprog.o: /usr/include/sys/_types/_fd_copy.h /usr/include/sys/_select.h
+pprog.o: /usr/include/sys/_types/_dev_t.h /usr/include/sys/_types/_mode_t.h
+pprog.o: /usr/include/sys/_types/_uuid_t.h /usr/include/gethostuuid.h
+pprog.o: /usr/include/stdlib.h /usr/include/sys/wait.h
+pprog.o: /usr/include/sys/_types/_id_t.h /usr/include/sys/signal.h
+pprog.o: /usr/include/machine/signal.h /usr/include/i386/signal.h
+pprog.o: /usr/include/machine/_mcontext.h /usr/include/i386/_mcontext.h
+pprog.o: /usr/include/mach/i386/_structs.h
+pprog.o: /usr/include/sys/_pthread/_pthread_attr_t.h
+pprog.o: /usr/include/sys/_types/_sigaltstack.h
+pprog.o: /usr/include/sys/_types/_ucontext.h /usr/include/sys/resource.h
+pprog.o: /usr/include/stdint.h /usr/include/sys/_types/_int8_t.h
+pprog.o: /usr/include/sys/_types/_int16_t.h
+pprog.o: /usr/include/sys/_types/_int32_t.h
+pprog.o: /usr/include/sys/_types/_int64_t.h /usr/include/_types/_uint8_t.h
+pprog.o: /usr/include/_types/_uint16_t.h /usr/include/_types/_uint32_t.h
+pprog.o: /usr/include/sys/_types/_uintptr_t.h /usr/include/_types/_intmax_t.h
+pprog.o: /usr/include/_types/_uintmax_t.h /usr/include/machine/endian.h
+pprog.o: /usr/include/i386/endian.h /usr/include/sys/_endian.h
+pprog.o: /usr/include/libkern/_OSByteOrder.h
+pprog.o: /usr/include/libkern/i386/_OSByteOrder.h /usr/include/alloca.h
+pprog.o: /usr/include/machine/types.h /usr/include/i386/types.h
+pprog.o: /usr/include/sys/_types/_u_int8_t.h
+pprog.o: /usr/include/sys/_types/_u_int16_t.h
+pprog.o: /usr/include/sys/_types/_u_int32_t.h
+pprog.o: /usr/include/sys/_types/_u_int64_t.h /usr/include/stdio.h
+pprog.o: /usr/include/sys/_types/_va_list.h /usr/include/sys/stdio.h
+pprog.o: /usr/include/secure/_stdio.h /usr/include/secure/_common.h
+pprog.o: /usr/include/strings.h /usr/include/string.h
+pprog.o: /usr/include/sys/_types/_rsize_t.h
+pprog.o: /usr/include/sys/_types/_errno_t.h /usr/include/secure/_string.h
+pprog.o: arr.h
 prog.o: crules.h pio.h /usr/include/ctype.h /usr/include/sys/cdefs.h
 prog.o: /usr/include/sys/_symbol_aliasing.h
 prog.o: /usr/include/sys/_posix_availability.h /usr/include/runetype.h

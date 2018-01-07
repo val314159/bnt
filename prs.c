@@ -1,2 +1,2 @@
 #include"prog.h"
-int main(){return !prog();}
+int main(){return !prog(0);}
