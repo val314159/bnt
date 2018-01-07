@@ -19,4 +19,4 @@ void*clonearr(void*src,int sz,int sz2){
   return memcpy(malloc((sz+1)*SZ),src,(sz2+1)*SZ);}
 void*mkarr(int sz){return clonearr(&zero,sz,1);}
 void*cparr(void*vec){return clonearr(vec,*(long*)vec,*(long*)vec);}
-#endif//_ARR_H__
+#endif

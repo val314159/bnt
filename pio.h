@@ -12,4 +12,4 @@ int S(int p){fseek(stdin,p,0);return 0;}
 int W(){for(;;){if(!isspace(G()))return U(),buflen=3,1;}}
 int T(){int p=ftell(stdin);W();return p;}
 int C(){return buf[++buflen]=0;}
-#endif//_PIO_H__
+#endif
