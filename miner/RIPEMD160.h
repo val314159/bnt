@@ -50,6 +50,8 @@
 #include <assert.h>
 #include <string.h>
 
+uchar_8 x;
+
 #define RIPEMD160_DIGEST_SIZE 20
 #define BLOCK_SIZE 64
 
