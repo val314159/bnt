@@ -46,26 +46,11 @@
  *   "RIPEMD-160 is big-bit-endian, little-byte-endian, and left-justified."
  */
 
+#include "RIPEMD160.h"
+
 #include <stdint.h>
 #include <assert.h>
 #include <string.h>
-
-#define RIPEMD160_DIGEST_SIZE 20
-#define BLOCK_SIZE 64
-#define RIPEMD160_MAGIC 0x9f19dd68u
-typedef struct {
-    uint32_t magic;
-    uint32_t h[5];      /* The current hash state */
-    uint64_t length;    /* Total number of _bits_ (not bytes) added to the
-                           hash.  This includes bits that have been buffered
-                           but not not fed through the compression function yet. */
-    union {
-        uint32_t w[16];
-        uint8_t b[64];
-    } buf;
-    uint8_t bufpos;     /* number of bytes currently in the buffer */
-} ripemd160_state;
-
 
 /* cyclic left-shift the 32-bit word n left by s bits */
 #define ROL(s, n) (((n) << (s)) | ((n) >> (32-(s))))

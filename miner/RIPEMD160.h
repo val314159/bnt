@@ -69,9 +69,24 @@ typedef struct {
 
 ripemd160_state ripemd160_init(ripemd160_state *self);
 void ripemd160_update(ripemd160_state *self, const unsigned char *p, int length);
-//void ripemd160_copy(const ripemd160_state *source, ripemd160_state *dest);
 int  ripemd160_digest(const ripemd160_state *self, unsigned char *out);
 
 void ripemd160_load(const char*const filename, ripemd160_state *source);
 void ripemd160_save(const ripemd160_state *dest, const char*const filename);
 void ripemd160_dump(const ripemd160_state*self);
+
+static inline
+void ripemd160_updates(ripemd160_state*self,const unsigned char*x){
+  ripemd160_update(self,x,strlen((char*)x));}
+
+static inline
+void ripemd160_updatec(ripemd160_state*self,unsigned char x){
+  ripemd160_update(self,&x,sizeof(x));}
+
+static inline
+void ripemd160_updatesh(ripemd160_state*self,unsigned short x){
+  ripemd160_update(self,(unsigned char*)&x,sizeof(x));}
+
+static inline
+void ripemd160_updatei(ripemd160_state*self,int x){
+  ripemd160_update(self,(unsigned char*)&x,sizeof(x));}
