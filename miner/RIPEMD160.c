@@ -139,261 +139,56 @@ static const uint32_t KR[5] = {
 };
 
 ripemd160_state ripemd160_init(ripemd160_state *self){
-  ripemd160_state bak;
-  self=self?:&bak;
+  ripemd160_state bak; self=self?:&bak;
   memcpy(self->h, initial_h, RIPEMD160_DIGEST_SIZE);
   memset(&self->buf, 0, sizeof(self->buf));
-  self->length = 0;
-  self->bufpos = 0;
-  self->magic = RIPEMD160_MAGIC;
-  return *self;
-}
-
-/* NB: This is not currently called in the hash object's destructor. */
-static void ripemd160_wipe(ripemd160_state *self){
-    memset(self, 0, sizeof(ripemd160_state));
-    self->magic = 0;
-}
-
-static inline void byteswap32(uint32_t *v){
-    union { uint32_t w; uint8_t b[4]; } x, y;
-
-    x.w = *v;
-    y.b[0] = x.b[3];
-    y.b[1] = x.b[2];
-    y.b[2] = x.b[1];
-    y.b[3] = x.b[0];
-    *v = y.w;
-
-    /* Wipe temporary variables */
-    x.w = y.w = 0;
-}
-
-static inline void byteswap_digest(uint32_t *p){
-    unsigned int i;
-    for (i = 0; i < 4; i++) {
-        byteswap32(p++);
-        byteswap32(p++);
-        byteswap32(p++);
-        byteswap32(p++);
-    }
-}
-
-/* The RIPEMD160 compression function.  Operates on self->buf */
-static void ripemd160_compress(ripemd160_state *self){
-    uint8_t w, round;
-    uint32_t T;
-    uint32_t AL, BL, CL, DL, EL;    /* left line */
-    uint32_t AR, BR, CR, DR, ER;    /* right line */
-
-    /* Sanity check */
-    assert(self->magic == RIPEMD160_MAGIC);
-    assert(self->bufpos == 64);
-    if (self->magic != RIPEMD160_MAGIC || self->bufpos != 64) {
-        ripemd160_wipe(self);
-        return; /* error */
-	byteswap_digest(0); /* shut the compiler up */
-    }
-
-    /* Byte-swap the buffer if we're on a big-endian machine */
-#ifdef PCT_BIG_ENDIAN
-    byteswap_digest(self->buf.w);
-#endif
-
-    /* Load the left and right lines with the initial state */
-    AL = AR = self->h[0];
-    BL = BR = self->h[1];
-    CL = CR = self->h[2];
-    DL = DR = self->h[3];
-    EL = ER = self->h[4];
-
-    /* Round 1 */
-    round = 0;
-    for (w = 0; w < 16; w++) { /* left line */
-        T = ROL(SL[round][w], AL + F1(BL, CL, DL) + self->buf.w[RL[round][w]] + KL[round]) + EL;
-        AL = EL; EL = DL; DL = ROL(10, CL); CL = BL; BL = T;
-    }
-    for (w = 0; w < 16; w++) { /* right line */
-        T = ROL(SR[round][w], AR + F5(BR, CR, DR) + self->buf.w[RR[round][w]] + KR[round]) + ER;
-        AR = ER; ER = DR; DR = ROL(10, CR); CR = BR; BR = T;
-    }
-
-    /* Round 2 */
-    round++;
-    for (w = 0; w < 16; w++) { /* left line */
-        T = ROL(SL[round][w], AL + F2(BL, CL, DL) + self->buf.w[RL[round][w]] + KL[round]) + EL;
-        AL = EL; EL = DL; DL = ROL(10, CL); CL = BL; BL = T;
-    }
-    for (w = 0; w < 16; w++) { /* right line */
-        T = ROL(SR[round][w], AR + F4(BR, CR, DR) + self->buf.w[RR[round][w]] + KR[round]) + ER;
-        AR = ER; ER = DR; DR = ROL(10, CR); CR = BR; BR = T;
-    }
-
-    /* Round 3 */
-    round++;
-    for (w = 0; w < 16; w++) { /* left line */
-        T = ROL(SL[round][w], AL + F3(BL, CL, DL) + self->buf.w[RL[round][w]] + KL[round]) + EL;
-        AL = EL; EL = DL; DL = ROL(10, CL); CL = BL; BL = T;
-    }
-    for (w = 0; w < 16; w++) { /* right line */
-        T = ROL(SR[round][w], AR + F3(BR, CR, DR) + self->buf.w[RR[round][w]] + KR[round]) + ER;
-        AR = ER; ER = DR; DR = ROL(10, CR); CR = BR; BR = T;
-    }
-
-    /* Round 4 */
-    round++;
-    for (w = 0; w < 16; w++) { /* left line */
-        T = ROL(SL[round][w], AL + F4(BL, CL, DL) + self->buf.w[RL[round][w]] + KL[round]) + EL;
-        AL = EL; EL = DL; DL = ROL(10, CL); CL = BL; BL = T;
-    }
-    for (w = 0; w < 16; w++) { /* right line */
-        T = ROL(SR[round][w], AR + F2(BR, CR, DR) + self->buf.w[RR[round][w]] + KR[round]) + ER;
-        AR = ER; ER = DR; DR = ROL(10, CR); CR = BR; BR = T;
-    }
-
-    /* Round 5 */
-    round++;
-    for (w = 0; w < 16; w++) { /* left line */
-        T = ROL(SL[round][w], AL + F5(BL, CL, DL) + self->buf.w[RL[round][w]] + KL[round]) + EL;
-        AL = EL; EL = DL; DL = ROL(10, CL); CL = BL; BL = T;
-    }
-    for (w = 0; w < 16; w++) { /* right line */
-        T = ROL(SR[round][w], AR + F1(BR, CR, DR) + self->buf.w[RR[round][w]] + KR[round]) + ER;
-        AR = ER; ER = DR; DR = ROL(10, CR); CR = BR; BR = T;
-    }
-
-    /* Final mixing stage */
-    T = self->h[1] + CL + DR;
-    self->h[1] = self->h[2] + DL + ER;
-    self->h[2] = self->h[3] + EL + AR;
-    self->h[3] = self->h[4] + AL + BR;
-    self->h[4] = self->h[0] + BL + CR;
-    self->h[0] = T;
-
-    /* Clear the buffer and wipe the temporary variables */
-    T = AL = BL = CL = DL = EL = AR = BR = CR = DR = ER = 0;
-    memset(&self->buf, 0, sizeof(self->buf));
-    self->bufpos = 0;
-}
-
-void ripemd160_update(ripemd160_state *self, const unsigned char *p, int length){
-    unsigned int bytes_needed;
-
-    /* Some assertions */
-    assert(self->magic == RIPEMD160_MAGIC);
-    assert(p != NULL && length >= 0);
-
-    /* NDEBUG is probably defined, so check for invalid inputs explicitly. */
-    if (self->magic != RIPEMD160_MAGIC || p == NULL || length < 0) {
-        /* error */
-        ripemd160_wipe(self);
-        return;
-    }
-
-    /* We never leave a full buffer */
-    assert(self->bufpos < 64);
-
-    while (length > 0) {
-        /* Figure out how many bytes we need to fill the internal buffer. */
-        bytes_needed = 64 - self->bufpos;
-
-        if ((unsigned int) length >= bytes_needed) {
-            /* We have enough bytes, so copy them into the internal buffer and run
-             * the compression function. */
-            memcpy(&self->buf.b[self->bufpos], p, bytes_needed);
-            self->bufpos += bytes_needed;
-            self->length += bytes_needed << 3;    /* length is in bits */
-            p += bytes_needed;
-            ripemd160_compress(self);
-            length -= bytes_needed;
-            continue;
-        }
-
-        /* We do not have enough bytes to fill the internal buffer.
-         * Copy what's there and return. */
-        memcpy(&self->buf.b[self->bufpos], p, length);
-        self->bufpos += length;
-        self->length += length << 3;    /* length is in bits */
-        return;
-    }
-}
-
-static void ripemd160_copy(const ripemd160_state *source, ripemd160_state *dest){
-    memcpy(dest, source, sizeof(ripemd160_state));
-}
-
-int ripemd160_digest(const ripemd160_state *self, unsigned char *out){
-    ripemd160_state tmp;
-
-    assert(self->magic == RIPEMD160_MAGIC);
-    assert(out != NULL);
-    if (self->magic != RIPEMD160_MAGIC || out == NULL) {
-        return 0;
-    }
-
-    ripemd160_copy(self, &tmp);
-
-    /* Append the padding */
+  self->length = 0; self->bufpos = 0; return *self;}
+static void ripemd160_compress(ripemd160_state *s){ uint8_t w;
+  uint32_t T, AR=s->h[0],AL=AR,BR=s->h[1],BL=BR,
+    CR=s->h[2],CL=CR,DR=s->h[3],DL=DR,ER=s->h[4],EL=ER;
+#define ROUND(r,X,Y);							\
+  for(w=0;w<16;w++)T=ROL(SL[r][w],AL+X(BL,CL,DL)+s->buf.w[RL[r][w]]+KL[r])+EL,AL=EL,EL=DL,DL=ROL(10,CL),CL=BL,BL=T; \
+  for(w=0;w<16;w++)T=ROL(SR[r][w],AR+Y(BR,CR,DR)+s->buf.w[RR[r][w]]+KR[r])+ER,AR=ER,ER=DR,DR=ROL(10,CR),CR=BR,BR=T;
+  ROUND(0,F1,F5);
+  ROUND(1,F2,F4);
+  ROUND(2,F3,F3);
+  ROUND(3,F4,F2);
+  ROUND(4,F5,F1);
+  T      =s->h[1]+CL+DR; s->h[1]=s->h[2]+DL+ER; s->h[2]=s->h[3]+EL+AR;
+  s->h[3]=s->h[4]+AL+BR; s->h[4]=s->h[0]+BL+CR; s->h[0]=T;  s->bufpos=0;}
+void ripemd160_update(ripemd160_state *self, const uint8_t *p, int length){
+  for(unsigned bytes_needed=64-self->bufpos; length>0; bytes_needed=64-self->bufpos){
+    if((unsigned)length<bytes_needed) bytes_needed=length;
+    memcpy(&self->buf.b[self->bufpos],p,bytes_needed);
+    self->bufpos+=bytes_needed; self->length+=bytes_needed<<3;	  
+    if((unsigned)length==bytes_needed) break;
+    p+=bytes_needed; ripemd160_compress(self); length-=bytes_needed;}}
+    
+int ripemd160_digest(const ripemd160_state *self, uint8_t *out){
+    ripemd160_state tmp = *self;
     tmp.buf.b[tmp.bufpos++] = 0x80;
-
-    if (tmp.bufpos > 56) {
-        tmp.bufpos = 64;
-        ripemd160_compress(&tmp);
-    }
-
-    /* Append the length */
+    if (tmp.bufpos > 56) { tmp.bufpos = 64; ripemd160_compress(&tmp); }
     tmp.buf.w[14] = (uint32_t) (tmp.length & 0xFFFFffffu);
     tmp.buf.w[15] = (uint32_t) ((tmp.length >> 32) & 0xFFFFffffu);
-#ifdef PCT_BIG_ENDIAN
-    byteswap32(&tmp.buf.w[14]);
-    byteswap32(&tmp.buf.w[15]);
-#endif
     tmp.bufpos = 64;
     ripemd160_compress(&tmp);
-
-    /* Copy the final state into the output buffer */
-#ifdef PCT_BIG_ENDIAN
-    byteswap_digest(tmp.h);
-#endif
     memcpy(out, &tmp.h, RIPEMD160_DIGEST_SIZE);
-
-    if (tmp.magic == RIPEMD160_MAGIC) {
-        /* success */
-        ripemd160_wipe(&tmp);
-        return 1;
-    } else {
-        /* error */
-        ripemd160_wipe(&tmp);
-        memset(out, 0, RIPEMD160_DIGEST_SIZE);
-        return 0;
-    }
-}
-
+    return 1;}
 
 #include<stdio.h>
-void ripemd160_load(const char*const filename,
-		    ripemd160_state *source){
-  FILE*f = fopen(filename,"r");
-  if(f){
-    printf("fread  = %ld\n",
-	   fread(source,1,sizeof(ripemd160_state),f));
-    fclose(f);
-  }
-}
 
-void ripemd160_save(const ripemd160_state *dest,
-		    const char*const filename){
+void ripemd160_load(const char*filename,ripemd160_state *source){
+  FILE*f = fopen(filename,"r");
+  if(f)printf("fread  = %ld\n", fread(source,1,sizeof(*source),f)),fclose(f);}
+
+void ripemd160_save(const ripemd160_state *dest,const char*filename){
   FILE*f = fopen(filename,"w");
-  if(f){
-    printf("fwrite = %ld\n",
-	   fwrite(dest,1,sizeof(ripemd160_state),f));
-    fclose(f);
-  }
-}
+  if(f)printf("fwrite = %ld\n", fwrite(dest,1,sizeof(*dest),f)),fclose(f);}
 
 void ripemd160_dump(const ripemd160_state*self){
-  unsigned char buf[10240];
-  ripemd160_digest(self,buf);
-  for(int n=0;n<20;n++)
-    printf("%02x", buf[n]);
-  printf("\n");}
+  uint8_t buf[10240]; ripemd160_digest(self,buf);
+  for(int n=0;n<20;n++) printf("%02x", buf[n]); printf("\n");}
+
+void ripemd160_updatef(ripemd160_state *self, const char*filename){
+  int sz = 64; uint8_t buf[sz]; FILE*f=fopen(filename,"r"); if(!f)return;
+  while((sz=fread(buf,1,sz,f))>0) ripemd160_update(self,buf,sz); fclose(f);}

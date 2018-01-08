@@ -50,14 +50,10 @@
 #include <assert.h>
 #include <string.h>
 
-uchar_8 x;
-
 #define RIPEMD160_DIGEST_SIZE 20
 #define BLOCK_SIZE 64
 
-#define RIPEMD160_MAGIC 0x9f19dd68u
 typedef struct {
-    uint32_t magic;
     uint32_t h[5];      /* The current hash state */
     uint64_t length;    /* Total number of _bits_ (not bytes) added to the
                            hash.  This includes bits that have been buffered
@@ -70,25 +66,27 @@ typedef struct {
 } ripemd160_state;
 
 ripemd160_state ripemd160_init(ripemd160_state *self);
-void ripemd160_update(ripemd160_state *self, const unsigned char *p, int length);
-int  ripemd160_digest(const ripemd160_state *self, unsigned char *out);
+void ripemd160_update(ripemd160_state *self, const uint8_t *p, int length);
+int  ripemd160_digest(const ripemd160_state *self, uint8_t *out);
 
 void ripemd160_load(const char*const filename, ripemd160_state *source);
 void ripemd160_save(const ripemd160_state *dest, const char*const filename);
 void ripemd160_dump(const ripemd160_state*self);
 
 static inline
-void ripemd160_updates(ripemd160_state*self,const unsigned char*x){
-  ripemd160_update(self,x,strlen((char*)x));}
+void ripemd160_updates(ripemd160_state*self,const char*x){
+  ripemd160_update(self,(uint8_t*)x,strlen(x));}
 
 static inline
-void ripemd160_updatec(ripemd160_state*self,unsigned char x){
-  ripemd160_update(self,&x,sizeof(x));}
+void ripemd160_updatec(ripemd160_state*self,uint8_t x){
+  ripemd160_update(self,(uint8_t*)&x,sizeof(x));}
 
 static inline
 void ripemd160_updatesh(ripemd160_state*self,unsigned short x){
-  ripemd160_update(self,(unsigned char*)&x,sizeof(x));}
+  ripemd160_update(self,(uint8_t*)&x,sizeof(x));}
 
 static inline
 void ripemd160_updatei(ripemd160_state*self,int x){
-  ripemd160_update(self,(unsigned char*)&x,sizeof(x));}
+  ripemd160_update(self,(uint8_t*)&x,sizeof(x));}
+
+void ripemd160_updatef(ripemd160_state *self, const char*filename);
