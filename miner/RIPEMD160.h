@@ -72,6 +72,7 @@ int  ripemd160_digest(const ripemd160_state *self, uint8_t *out);
 void ripemd160_load(const char*const filename, ripemd160_state *source);
 void ripemd160_save(const ripemd160_state *dest, const char*const filename);
 void ripemd160_dump(const ripemd160_state*self);
+void ripemd160_xdump(const ripemd160_state*self);
 
 static inline
 void ripemd160_updates(ripemd160_state*self,const char*x){

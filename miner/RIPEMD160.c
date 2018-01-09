@@ -185,6 +185,9 @@ void ripemd160_save(const ripemd160_state *dest,const char*filename){
   FILE*f = fopen(filename,"w");
   if(f)printf("fwrite = %ld\n", fwrite(dest,1,sizeof(*dest),f)),fclose(f);}
 
+void ripemd160_xdump(const ripemd160_state*self){
+  uint8_t buf[10240]; ripemd160_digest(self,buf);
+  for(int n=0;n<20;n++) printf("%02x", buf[n]);}
 void ripemd160_dump(const ripemd160_state*self){
   uint8_t buf[10240]; ripemd160_digest(self,buf);
   for(int n=0;n<20;n++) printf("%02x", buf[n]); printf("\n");}
