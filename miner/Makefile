@@ -37,5 +37,5 @@ clean: ; rm -fr *.o *~ *.bak *.xx $(BINS) tst/0* *.sig *.blk chain
 # DO NOT DELETE
 
 RIPEMD160.o: RIPEMD160.h
+minedir.o: RIPEMD160.h
 rmain.o: RIPEMD160.h
-signdir.o: RIPEMD160.h
