@@ -26,20 +26,19 @@ tmp/0.sig:
 	@make tmp/t.sig
 	@mv   tmp/t.sig tmp/0.sig
 tmp/in.xx:
-	echo XXX1
-	mkdir tmp
-	echo XXX2
-	echo -n Rosetta Codex >$@
-	echo XXX3
-test: $(BINS) tmp/in.xx
+	@mkdir tmp
+	@echo -n Rosetta Codex >$@
+pytest:
+	python pycrypto_test.py sign
+	python pycrypto_test.py vrfy
+test: $(BINS) tmp/in.xx pytest
 	./rmain
 	python xx.py
 	make genesis
 	make nextblk
 	make nextblk
 	make nextblk
-	python pycrypto_test.py
-clean: ; rm -fr *.o *~ *.bak $(BINS) chain tmp
+clean: ; rm -fr *.o *~ *.bak $(BINS) chain tmp *.pem my.* *.sig
 # DO NOT DELETE
 
 RIPEMD160.o: RIPEMD160.h
