@@ -25,9 +25,7 @@ tmp/0.sig:
 	@mkdir -p chain/t
 	@make tmp/t.sig
 	@mv   tmp/t.sig tmp/0.sig
-tmp/in.xx:
-	@mkdir tmp
-	@echo -n Rosetta Codex >$@
+tmp/in.xx: ; @mkdir tmp && echo -n Rosetta Codex >$@
 pytest:
 	python pycrypto_test.py sign
 	python pycrypto_test.py vrfy
