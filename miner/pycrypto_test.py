@@ -12,11 +12,15 @@ def hash_doc(doc):    return SHA224.new(doc)
 def sign_hash(hashy): return rsa_key.sign(hashy.hexdigest(), "n/a")
 def vrfy_hash(hashy, sig):
     return rsa_key.publickey().verify(hashy.hexdigest(), sig)
-def load_rsa(fname='my.pem'):
+def rawsign_hash(hashy):    return rsa_key.sign(hashy, "n/a")
+def rawvrfy_hash(hashy,sig):return rsa_key.publickey().verify(hashy,sig)
+def load_rsa_public(fname='pub.pem'):
     global rsa_key; rsa_key = RSA.importKey(open(fname).read())
-def save_rsa_public(fname='my.pem'):
+def load_rsa_private(fname='prv.pem'):
+    global rsa_key; rsa_key = RSA.importKey(open(fname).read())
+def save_rsa_public(fname='pub.pem'):
     return open(fname,'w').write(rsa_key.publickey().exportKey('PEM'))
-def save_rsa_private(fname='my.pem'):
+def save_rsa_private(fname='prv.pem'):
     return open(fname,'w').write(rsa_key.exportKey('PEM'))
 def enc_rsa(text): return rsa_key.encrypt(text, "n/a")[0]
 def dec_rsa(garb): return rsa_key.decrypt(garb)
@@ -30,17 +34,17 @@ def enc_aes(text,key,iv=AES_IV):
     return AES.new(key, AES.MODE_CBC, IV=iv).encrypt(text)
 def dec_aes(garb,key,iv=AES_IV):
     return AES.new(key, AES.MODE_CBC, IV=iv).encrypt(garb)
-def keys(): save_rsa_private('prv.pem'), save_rsa_public( 'pub.pem')
+def keys(): save_rsa_private(), save_rsa_public()
 def sign():
-    load_rsa('prv.pem')
+    load_rsa_private()
     hash1 = hash_doc(open(sys.argv[1]).read())
-    signature1 = sign_hash(hash1)
-    pickle.dump(signature1,open('s1.sig','w'))
+    sig1 = sign_hash(hash1)
+    pickle.dump(sig1,open('s1.sig','w'))
 def verify():
-    load_rsa('pub.pem')
+    load_rsa_public()
     hash1 = hash_doc(open(sys.argv[1]).read())
-    signature1 = pickle.load(open('s1.sig','r'))
-    assert vrfy_hash(hash1, signature1) == True
+    sig1 = pickle.load(open('s1.sig','r'))
+    assert vrfy_hash(hash1, sig1) == True
 def main():
     d = dict(keys=keys, sign=sign, verify=verify, test=test)
     if len(sys.argv)>1: exit( d[sys.argv.pop(1)]() )
