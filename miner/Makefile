@@ -27,8 +27,10 @@ tmp/0.sig:
 	@mv   tmp/t.sig tmp/0.sig
 tmp/in.xx: ; @mkdir tmp && echo -n Rosetta Codex >$@
 pytest:
-	python pycrypto_test.py sign
-	python pycrypto_test.py vrfy
+	python pycrypto_test.py test
+	python pycrypto_test.py keys
+	python pycrypto_test.py sign xx.py
+	python pycrypto_test.py verify xx.py
 test: $(BINS) tmp/in.xx pytest
 	./rmain
 	python xx.py
